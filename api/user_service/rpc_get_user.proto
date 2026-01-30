@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package user_service;
+
+option go_package = "github.com/example/user-service/pkg/pb/user_service";
+
+import "api/user_service/model.proto";
+
+message GetUserRequest {
+  string id = 1;
+}
+
+message GetUserResponse {
+  User user = 1;
+}

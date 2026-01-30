@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package user_service;
+
+option go_package = "github.com/example/user-service/pkg/pb/user_service";
+
+import "api/user_service/enum.proto";
+
+// User - модель пользователя
+message User {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  UserStatus status = 4;
+  int64 created_at = 5;
+  int64 updated_at = 6;
+}

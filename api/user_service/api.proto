@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package user_service;
+
+option go_package = "github.com/example/user-service/pkg/pb/user_service";
+
+import "api/user_service/rpc_create_user.proto";
+import "api/user_service/rpc_get_user.proto";
+import "api/user_service/rpc_update_user.proto";
+import "api/user_service/rpc_delete_user.proto";
+import "api/user_service/rpc_list_users.proto";
+
+// UserService - сервис управления пользователями
+service UserService {
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+}

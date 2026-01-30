@@ -1,0 +1,49 @@
+# Бинарники
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Тестовые артефакты
+*.test
+*.out
+coverage.out
+coverage.html
+
+# Зависимости
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Конфиденциальные данные
+*.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+
+# Логи
+*.log
+logs/
+
+# Временные файлы
+tmp/
+temp/
+
+# Сгенерированные файлы (если не коммитите pb)
+# pkg/pb/
+
+# Docker
+docker-compose.override.yml

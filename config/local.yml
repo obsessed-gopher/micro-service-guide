@@ -1,0 +1,32 @@
+# Локальная конфигурация
+app:
+  name: user-service
+  env: local
+  debug: true
+
+server:
+  grpc:
+    host: "0.0.0.0"
+    port: 50051
+  http:
+    host: "0.0.0.0"
+    port: 8080
+
+database:
+  host: localhost
+  port: 5432
+  name: users_db
+  user: postgres
+  password: postgres
+  ssl_mode: disable
+  max_open_conns: 10
+  max_idle_conns: 5
+  conn_max_lifetime: 5m
+
+log:
+  level: debug
+  format: text  # text | json
+
+metrics:
+  enabled: true
+  port: 9090

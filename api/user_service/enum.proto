@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package user_service;
+
+option go_package = "github.com/example/user-service/pkg/pb/user_service";
+
+// UserStatus - статус пользователя
+enum UserStatus {
+  USER_STATUS_UNSPECIFIED = 0;
+  USER_STATUS_ACTIVE = 1;
+  USER_STATUS_INACTIVE = 2;
+  USER_STATUS_BLOCKED = 3;
+}
