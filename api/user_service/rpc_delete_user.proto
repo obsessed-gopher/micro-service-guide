@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package user_service;
 
-option go_package = "github.com/example/user-service/pkg/pb/user_service";
+option go_package = "github.com/obsessed-gopher/micro-service-guide/pkg/pb/user_service";
 
 message DeleteUserRequest {
   string id = 1;

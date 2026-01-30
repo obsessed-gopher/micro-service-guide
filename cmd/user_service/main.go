@@ -12,13 +12,13 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	userservice "github.com/example/user-service/internal/app/grpc/user_service"
-	"github.com/example/user-service/internal/adapters/hasher"
-	"github.com/example/user-service/internal/adapters/idgen"
-	"github.com/example/user-service/internal/adapters/repository"
-	"github.com/example/user-service/internal/config"
-	"github.com/example/user-service/internal/modules"
-	pb "github.com/example/user-service/pkg/pb/user_service"
+	"github.com/obsessed-gopher/micro-service-guide/internal/adapters/hasher"
+	"github.com/obsessed-gopher/micro-service-guide/internal/adapters/idgen"
+	"github.com/obsessed-gopher/micro-service-guide/internal/adapters/repository"
+	userservice "github.com/obsessed-gopher/micro-service-guide/internal/app/grpc/user_service"
+	"github.com/obsessed-gopher/micro-service-guide/internal/config"
+	"github.com/obsessed-gopher/micro-service-guide/internal/modules"
+	pb "github.com/obsessed-gopher/micro-service-guide/pkg/pb/user_service"
 )
 
 func main() {

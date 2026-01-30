@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/example/user-service/internal/models"
-	"github.com/example/user-service/internal/types"
+	"github.com/obsessed-gopher/micro-service-guide/internal/models"
+	"github.com/obsessed-gopher/micro-service-guide/internal/types"
 )
 
 // UserRepository - интерфейс репозитория пользователей.

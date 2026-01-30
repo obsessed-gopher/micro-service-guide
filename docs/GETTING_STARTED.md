@@ -43,7 +43,7 @@ touch api/user_service/rpc_block_user.proto
 // api/user_service/rpc_block_user.proto
 syntax = "proto3";
 package user_service;
-option go_package = "github.com/example/user-service/pkg/pb/user_service";
+option go_package = "github.com/obsessed-gopher/micro-service-guide/pkg/pb/user_service";
 
 message BlockUserRequest {
   string id = 1;
@@ -101,7 +101,7 @@ package user_service
 import (
     "context"
 
-    pb "github.com/example/user-service/pkg/pb/user_service"
+    pb "github.com/obsessed-gopher/micro-service-guide/pkg/pb/user_service"
     "google.golang.org/grpc/codes"
     "google.golang.org/grpc/status"
 )

@@ -1,4 +1,4 @@
-module github.com/example/user-service
+module github.com/obsessed-gopher/micro-service-guide
 
 go 1.22
 

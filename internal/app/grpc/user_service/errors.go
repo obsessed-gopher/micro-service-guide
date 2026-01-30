@@ -1,7 +1,7 @@
 package user_service
 
 import (
-	"github.com/example/user-service/internal/types"
+	"github.com/obsessed-gopher/micro-service-guide/internal/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

@@ -4,8 +4,8 @@ package user_service
 import (
 	"context"
 
-	"github.com/example/user-service/internal/models"
-	pb "github.com/example/user-service/pkg/pb/user_service"
+	"github.com/obsessed-gopher/micro-service-guide/internal/models"
+	pb "github.com/obsessed-gopher/micro-service-guide/pkg/pb/user_service"
 )
 
 // UserModule - интерфейс бизнес-логики пользователей.

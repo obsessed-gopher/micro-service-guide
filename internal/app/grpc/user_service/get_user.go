@@ -3,7 +3,7 @@ package user_service
 import (
 	"context"
 
-	pb "github.com/example/user-service/pkg/pb/user_service"
+	pb "github.com/obsessed-gopher/micro-service-guide/pkg/pb/user_service"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

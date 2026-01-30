@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/example/user-service/internal/models"
-	"github.com/example/user-service/internal/types"
+	"github.com/obsessed-gopher/micro-service-guide/internal/models"
+	"github.com/obsessed-gopher/micro-service-guide/internal/types"
 )
 
 type mockRepository struct {

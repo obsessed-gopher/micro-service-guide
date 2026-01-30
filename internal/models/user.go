@@ -4,7 +4,7 @@ package models
 import (
 	"time"
 
-	"github.com/example/user-service/internal/types"
+	"github.com/obsessed-gopher/micro-service-guide/internal/types"
 )
 
 // User - бизнес-модель пользователя.

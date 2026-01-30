@@ -93,7 +93,7 @@ linters-settings:
     locale: US
 
   goimports:
-    local-prefixes: github.com/example/user-service
+    local-prefixes: github.com/obsessed-gopher/micro-service-guide
 
   gocritic:
     enabled-tags:

@@ -1,9 +1,9 @@
 package user_service
 
 import (
-	"github.com/example/user-service/internal/models"
-	"github.com/example/user-service/internal/types"
-	pb "github.com/example/user-service/pkg/pb/user_service"
+	"github.com/obsessed-gopher/micro-service-guide/internal/models"
+	"github.com/obsessed-gopher/micro-service-guide/internal/types"
+	pb "github.com/obsessed-gopher/micro-service-guide/pkg/pb/user_service"
 )
 
 // userToProto конвертирует бизнес-модель в proto.
