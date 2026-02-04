@@ -5,6 +5,7 @@ import (
 	"context"
 
 	"github.com/obsessed-gopher/micro-service-guide/internal/models"
+	"github.com/obsessed-gopher/micro-service-guide/internal/usecases"
 	pb "github.com/obsessed-gopher/micro-service-guide/pkg/pb/user_service"
 )
 
@@ -13,8 +14,8 @@ type UserUsecase interface {
 	Create(ctx context.Context, input models.CreateUserInput) (*models.User, error)
 	GetByID(ctx context.Context, id string) (*models.User, error)
 	Update(ctx context.Context, id string, input models.UpdateUserInput) (*models.User, error)
-	Delete(ctx context.Context, id string) error
-	List(ctx context.Context, filter models.ListUsersFilter) ([]*models.User, int, error)
+	Delete(ctx context.Context, filter models.UserFilter) (int, error)
+	List(ctx context.Context, filter usecases.ListFilter) ([]*models.User, int, error)
 }
 
 // Server - gRPC сервер сервиса пользователей.

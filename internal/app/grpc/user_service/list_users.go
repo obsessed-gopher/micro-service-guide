@@ -3,19 +3,22 @@ package user_service
 import (
 	"context"
 
-	"github.com/obsessed-gopher/micro-service-guide/internal/models"
+	"github.com/obsessed-gopher/micro-service-guide/internal/types"
+	"github.com/obsessed-gopher/micro-service-guide/internal/usecases"
 	pb "github.com/obsessed-gopher/micro-service-guide/pkg/pb/user_service"
 )
 
 // ListUsers возвращает список пользователей.
 func (s *Server) ListUsers(ctx context.Context, req *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
-	filter := models.ListUsersFilter{
+	filter := usecases.ListFilter{
 		Limit:  int(req.Limit),
 		Offset: int(req.Offset),
 	}
-	if req.Status != nil {
-		st := statusFromProto(*req.Status)
-		filter.Status = &st
+
+	if req.Filter != nil {
+		filter.IDs = req.Filter.Ids
+		filter.Emails = req.Filter.Emails
+		filter.Statuses = statusesFromProto(req.Filter.Statuses)
 	}
 
 	users, total, err := s.userUsecase.List(ctx, filter)
@@ -32,4 +35,17 @@ func (s *Server) ListUsers(ctx context.Context, req *pb.ListUsersRequest) (*pb.L
 		Users: protoUsers,
 		Total: int32(total),
 	}, nil
+}
+
+func statusesFromProto(statuses []pb.UserStatus) []types.UserStatus {
+	if len(statuses) == 0 {
+		return nil
+	}
+
+	result := make([]types.UserStatus, len(statuses))
+	for i, s := range statuses {
+		result[i] = statusFromProto(s)
+	}
+
+	return result
 }

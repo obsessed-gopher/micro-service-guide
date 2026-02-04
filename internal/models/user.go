@@ -42,9 +42,17 @@ type UpdateUserInput struct {
 	Status *types.UserStatus
 }
 
-// ListUsersFilter - фильтры для списка пользователей.
-type ListUsersFilter struct {
-	Status *types.UserStatus
+// UserFilter - фильтры для поиска пользователей.
+// Все поля — слайсы для поддержки множественных значений (IN).
+// Пустой слайс означает "без фильтра по этому полю".
+type UserFilter struct {
+	IDs      []string
+	Emails   []string
+	Statuses []types.UserStatus
+}
+
+// Pagination - параметры пагинации.
+type Pagination struct {
 	Limit  int
 	Offset int
 }

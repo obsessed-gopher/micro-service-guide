@@ -73,11 +73,18 @@ type DeleteUserRequest struct {
 // DeleteUserResponse - ответ на удаление пользователя.
 type DeleteUserResponse struct{}
 
+// UserFilter - фильтры для поиска пользователей.
+type UserFilter struct {
+	Ids      []string
+	Emails   []string
+	Statuses []UserStatus
+}
+
 // ListUsersRequest - запрос на список пользователей.
 type ListUsersRequest struct {
+	Filter *UserFilter
 	Limit  int32
 	Offset int32
-	Status *UserStatus
 }
 
 // ListUsersResponse - ответ на список пользователей.

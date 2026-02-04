@@ -9,12 +9,12 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/obsessed-gopher/micro-service-guide/internal/adapters/memory"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
 	"github.com/obsessed-gopher/micro-service-guide/internal/adapters/hasher"
 	"github.com/obsessed-gopher/micro-service-guide/internal/adapters/idgen"
-	"github.com/obsessed-gopher/micro-service-guide/internal/adapters/repository"
 	userservice "github.com/obsessed-gopher/micro-service-guide/internal/app/grpc/user_service"
 	"github.com/obsessed-gopher/micro-service-guide/internal/config"
 	"github.com/obsessed-gopher/micro-service-guide/internal/usecases"
@@ -37,7 +37,7 @@ func main() {
 	// db, err := sql.Open("postgres", cfg.Database.DSN())
 	// userRepo := repository.NewPostgresUserRepository(db)
 
-	userRepo := repository.NewMemoryUserRepository()
+	userRepo := memory.NewMemoryUserRepository()
 	passwordHasher := hasher.NewBcryptHasher(0)
 	idGenerator := idgen.NewUUIDGenerator()
 

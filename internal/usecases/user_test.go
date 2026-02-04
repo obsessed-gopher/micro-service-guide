@@ -21,21 +21,61 @@ func (m *mockRepository) Create(ctx context.Context, user *models.User) error {
 	return nil
 }
 
-func (m *mockRepository) GetByID(ctx context.Context, id string) (*models.User, error) {
-	user, ok := m.users[id]
-	if !ok {
-		return nil, types.ErrUserNotFound
+func (m *mockRepository) Find(ctx context.Context, filter models.UserFilter, pagination *models.Pagination) ([]*models.User, error) {
+	var result []*models.User
+	for _, user := range m.users {
+		if !m.matchesFilter(user, filter) {
+			continue
+		}
+		result = append(result, user)
 	}
-	return user, nil
+	if pagination != nil && pagination.Limit > 0 {
+		start := min(pagination.Offset, len(result))
+		end := min(start+pagination.Limit, len(result))
+		result = result[start:end]
+	}
+	return result, nil
 }
 
-func (m *mockRepository) GetByEmail(ctx context.Context, email string) (*models.User, error) {
+func (m *mockRepository) Count(ctx context.Context, filter models.UserFilter) (int, error) {
+	count := 0
 	for _, user := range m.users {
-		if user.Email == email {
-			return user, nil
+		if m.matchesFilter(user, filter) {
+			count++
 		}
 	}
-	return nil, types.ErrUserNotFound
+	return count, nil
+}
+
+func (m *mockRepository) matchesFilter(user *models.User, filter models.UserFilter) bool {
+	if len(filter.IDs) > 0 && !containsString(filter.IDs, user.ID) {
+		return false
+	}
+	if len(filter.Emails) > 0 && !containsString(filter.Emails, user.Email) {
+		return false
+	}
+	if len(filter.Statuses) > 0 && !containsStatus(filter.Statuses, user.Status) {
+		return false
+	}
+	return true
+}
+
+func containsString(slice []string, val string) bool {
+	for _, s := range slice {
+		if s == val {
+			return true
+		}
+	}
+	return false
+}
+
+func containsStatus(slice []types.UserStatus, val types.UserStatus) bool {
+	for _, s := range slice {
+		if s == val {
+			return true
+		}
+	}
+	return false
 }
 
 func (m *mockRepository) Update(ctx context.Context, user *models.User) error {
@@ -46,20 +86,17 @@ func (m *mockRepository) Update(ctx context.Context, user *models.User) error {
 	return nil
 }
 
-func (m *mockRepository) Delete(ctx context.Context, id string) error {
-	if _, ok := m.users[id]; !ok {
-		return types.ErrUserNotFound
+func (m *mockRepository) Delete(ctx context.Context, filter models.UserFilter) (int, error) {
+	var toDelete []string
+	for id, user := range m.users {
+		if m.matchesFilter(user, filter) {
+			toDelete = append(toDelete, id)
+		}
 	}
-	delete(m.users, id)
-	return nil
-}
-
-func (m *mockRepository) List(ctx context.Context, filter models.ListUsersFilter) ([]*models.User, int, error) {
-	var users []*models.User
-	for _, u := range m.users {
-		users = append(users, u)
+	for _, id := range toDelete {
+		delete(m.users, id)
 	}
-	return users, len(users), nil
+	return len(toDelete), nil
 }
 
 type mockHasher struct{}

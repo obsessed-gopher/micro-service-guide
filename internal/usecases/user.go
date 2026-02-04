@@ -14,11 +14,10 @@ import (
 // UserRepository - интерфейс репозитория пользователей.
 type UserRepository interface {
 	Create(ctx context.Context, user *models.User) error
-	GetByID(ctx context.Context, id string) (*models.User, error)
-	GetByEmail(ctx context.Context, email string) (*models.User, error)
+	Find(ctx context.Context, filter models.UserFilter, pagination *models.Pagination) ([]*models.User, error)
+	Count(ctx context.Context, filter models.UserFilter) (int, error)
 	Update(ctx context.Context, user *models.User) error
-	Delete(ctx context.Context, id string) error
-	List(ctx context.Context, filter models.ListUsersFilter) ([]*models.User, int, error)
+	Delete(ctx context.Context, filter models.UserFilter) (int, error)
 }
 
 // PasswordHasher - интерфейс для хэширования паролей.
@@ -50,6 +49,20 @@ func NewUserUsecase(repo UserRepository, hasher PasswordHasher, idGen IDGenerato
 
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
+// findOne возвращает одного пользователя по фильтру или ErrUserNotFound.
+func (m *UserUsecase) findOne(ctx context.Context, filter models.UserFilter) (*models.User, error) {
+	users, err := m.repo.Find(ctx, filter, &models.Pagination{Limit: 1})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(users) == 0 {
+		return nil, types.ErrUserNotFound
+	}
+
+	return users[0], nil
+}
+
 // Create создаёт нового пользователя.
 func (m *UserUsecase) Create(ctx context.Context, input models.CreateUserInput) (*models.User, error) {
 	if !emailRegex.MatchString(input.Email) {
@@ -60,7 +73,7 @@ func (m *UserUsecase) Create(ctx context.Context, input models.CreateUserInput) 
 		return nil, types.ErrInvalidPassword
 	}
 
-	existing, err := m.repo.GetByEmail(ctx, input.Email)
+	existing, err := m.findOne(ctx, models.UserFilter{Emails: []string{input.Email}})
 	if err != nil && !types.IsNotFound(err) {
 		return nil, fmt.Errorf("check existing user: %w", err)
 	}
@@ -93,7 +106,7 @@ func (m *UserUsecase) Create(ctx context.Context, input models.CreateUserInput) 
 
 // GetByID возвращает пользователя по ID.
 func (m *UserUsecase) GetByID(ctx context.Context, id string) (*models.User, error) {
-	user, err := m.repo.GetByID(ctx, id)
+	user, err := m.findOne(ctx, models.UserFilter{IDs: []string{id}})
 	if err != nil {
 		return nil, fmt.Errorf("get user: %w", err)
 	}
@@ -102,7 +115,7 @@ func (m *UserUsecase) GetByID(ctx context.Context, id string) (*models.User, err
 
 // Update обновляет данные пользователя.
 func (m *UserUsecase) Update(ctx context.Context, id string, input models.UpdateUserInput) (*models.User, error) {
-	user, err := m.repo.GetByID(ctx, id)
+	user, err := m.findOne(ctx, models.UserFilter{IDs: []string{id}})
 	if err != nil {
 		return nil, fmt.Errorf("get user: %w", err)
 	}
@@ -135,26 +148,48 @@ func (m *UserUsecase) Update(ctx context.Context, id string, input models.Update
 	return user, nil
 }
 
-// Delete удаляет пользователя.
-func (m *UserUsecase) Delete(ctx context.Context, id string) error {
-	if err := m.repo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete user: %w", err)
+// Delete удаляет пользователей по фильтру. Возвращает количество удалённых.
+func (m *UserUsecase) Delete(ctx context.Context, filter models.UserFilter) (int, error) {
+	count, err := m.repo.Delete(ctx, filter)
+	if err != nil {
+		return 0, fmt.Errorf("delete users: %w", err)
 	}
-	return nil
+	return count, nil
+}
+
+// ListFilter - параметры для метода List (публичный API usecase).
+type ListFilter struct {
+	Filters models.UserFilter
+	Limit   int
+	Offset  int
 }
 
 // List возвращает список пользователей.
-func (m *UserUsecase) List(ctx context.Context, filter models.ListUsersFilter) ([]*models.User, int, error) {
+func (m *UserUsecase) List(ctx context.Context, filter ListFilter) ([]*models.User, int, error) {
 	if filter.Limit <= 0 {
 		filter.Limit = 20
 	}
+
 	if filter.Limit > 100 {
 		filter.Limit = 100
 	}
 
-	users, total, err := m.repo.List(ctx, filter)
+	repoFilter := models.UserFilter{
+		IDs:      filter.Filters.IDs,
+		Emails:   filter.Filters.Emails,
+		Statuses: filter.Filters.Statuses,
+	}
+
+	pagination := &models.Pagination{Limit: filter.Limit, Offset: filter.Offset}
+
+	users, err := m.repo.Find(ctx, repoFilter, pagination)
 	if err != nil {
 		return nil, 0, fmt.Errorf("list users: %w", err)
+	}
+
+	total, err := m.repo.Count(ctx, repoFilter)
+	if err != nil {
+		return nil, 0, fmt.Errorf("count users: %w", err)
 	}
 
 	return users, total, nil
