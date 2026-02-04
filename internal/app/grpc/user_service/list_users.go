@@ -18,7 +18,7 @@ func (s *Server) ListUsers(ctx context.Context, req *pb.ListUsersRequest) (*pb.L
 		filter.Status = &st
 	}
 
-	users, total, err := s.userModule.List(ctx, filter)
+	users, total, err := s.userUsecase.List(ctx, filter)
 	if err != nil {
 		return nil, mapError(err)
 	}

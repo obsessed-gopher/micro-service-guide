@@ -16,7 +16,7 @@
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                     internal/modules                        │
+│                     internal/usecases                        │
 │                   (бизнес-логика)                           │
 └─────────────────────────────────────────────────────────────┘
                     │                   │
@@ -86,10 +86,10 @@ func main() {
     hasher := hasher.NewBcryptHasher(0)
 
     // Business logic
-    userModule := modules.NewUserModule(repo, hasher, idGen)
+    userUsecase := usecases.NewUserUsecase(repo, hasher, idGen)
 
     // Transport
-    server := userservice.NewServer(userModule)
+    server := userservice.NewServer(userUsecase)
 
     // gRPC
     grpcServer := grpc.NewServer()
@@ -102,7 +102,7 @@ func main() {
 
 **server.go:**
 ```go
-type UserModule interface {
+type UserUsecase interface {
     Create(ctx context.Context, input models.CreateUserInput) (*models.User, error)
     GetByID(ctx context.Context, id string) (*models.User, error)
     // ...
@@ -110,11 +110,11 @@ type UserModule interface {
 
 type Server struct {
     pb.UnimplementedUserServiceServer
-    userModule UserModule
+    userUsecase UserUsecase
 }
 
-func NewServer(userModule UserModule) *Server {
-    return &Server{userModule: userModule}
+func NewServer(userUsecase UserUsecase) *Server {
+    return &Server{userUsecase: userUsecase}
 }
 ```
 
@@ -127,7 +127,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
     }
 
     // 2. Вызов бизнес-логики
-    user, err := s.userModule.Create(ctx, models.CreateUserInput{
+    user, err := s.userUsecase.Create(ctx, models.CreateUserInput{
         Email: req.Email,
         Name:  req.Name,
     })
@@ -173,7 +173,7 @@ func mapError(err error) error {
 }
 ```
 
-### internal/modules/ — Business Logic
+### internal/usecases/ — Business Logic
 
 ```go
 // Интерфейсы определяются здесь (consumer-side)
@@ -182,13 +182,13 @@ type UserRepository interface {
     GetByID(ctx context.Context, id string) (*models.User, error)
 }
 
-type UserModule struct {
+type UserUsecase struct {
     repo   UserRepository
     hasher PasswordHasher
     idGen  IDGenerator
 }
 
-func (m *UserModule) Create(ctx context.Context, input models.CreateUserInput) (*models.User, error) {
+func (m *UserUsecase) Create(ctx context.Context, input models.CreateUserInput) (*models.User, error) {
     // Бизнес-валидация
     if !isValidEmail(input.Email) {
         return nil, types.ErrInvalidEmail
@@ -267,28 +267,28 @@ const (
 ## Зависимости
 
 ```
-cmd                 → internal/app/grpc, internal/modules, internal/adapters, internal/config
-internal/app/grpc   → internal/modules (interface), internal/models, internal/types, pkg/pb
-internal/modules    → internal/models, internal/types
+cmd                 → internal/app/grpc, internal/usecases, internal/adapters, internal/config
+internal/app/grpc   → internal/usecases (interface), internal/models, internal/types, pkg/pb
+internal/usecases    → internal/models, internal/types
 internal/adapters   → internal/models, internal/types
 internal/models     → internal/types
 internal/types      → (ничего)
 ```
 
 **Запрещено:**
-- `models` → `modules`
-- `modules` → `app/grpc`
-- `adapters` → `modules`
+- `models` → `usecases`
+- `usecases` → `app/grpc`
+- `adapters` → `usecases`
 
 ## Тестирование
 
 ```go
-// modules/user_test.go
-func TestUserModule_Create(t *testing.T) {
+// usecases/user_test.go
+func TestUserUsecase_Create(t *testing.T) {
     repo := newMockRepository()
-    module := NewUserModule(repo, mockHasher, mockIDGen)
+    usecase := NewUserUsecase(repo, mockHasher, mockIDGen)
 
-    user, err := module.Create(ctx, models.CreateUserInput{
+    user, err := usecase.Create(ctx, models.CreateUserInput{
         Email: "test@example.com",
     })
 

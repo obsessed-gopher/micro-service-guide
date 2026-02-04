@@ -1,4 +1,4 @@
-package modules
+package usecases
 
 import (
 	"context"
@@ -81,11 +81,11 @@ func (m *mockIDGen) Generate() string {
 	return "test-id-" + string(rune('0'+m.counter))
 }
 
-func TestUserModule_Create(t *testing.T) {
+func TestUserUsecase_Create(t *testing.T) {
 	repo := newMockRepository()
 	hasher := &mockHasher{}
 	idGen := &mockIDGen{}
-	module := NewUserModule(repo, hasher, idGen)
+	usecase := NewUserUsecase(repo, hasher, idGen)
 
 	tests := []struct {
 		name    string
@@ -123,7 +123,7 @@ func TestUserModule_Create(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			user, err := module.Create(context.Background(), tt.input)
+			user, err := usecase.Create(context.Background(), tt.input)
 
 			if tt.wantErr != nil {
 				if err != tt.wantErr {

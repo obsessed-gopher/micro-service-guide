@@ -17,7 +17,7 @@ import (
 	"github.com/obsessed-gopher/micro-service-guide/internal/adapters/repository"
 	userservice "github.com/obsessed-gopher/micro-service-guide/internal/app/grpc/user_service"
 	"github.com/obsessed-gopher/micro-service-guide/internal/config"
-	"github.com/obsessed-gopher/micro-service-guide/internal/modules"
+	"github.com/obsessed-gopher/micro-service-guide/internal/usecases"
 	pb "github.com/obsessed-gopher/micro-service-guide/pkg/pb/user_service"
 )
 
@@ -42,10 +42,10 @@ func main() {
 	idGenerator := idgen.NewUUIDGenerator()
 
 	// Бизнес-логика
-	userModule := modules.NewUserModule(userRepo, passwordHasher, idGenerator)
+	userUsecase := usecases.NewUserUsecase(userRepo, passwordHasher, idGenerator)
 
 	// gRPC сервер
-	server := userservice.NewServer(userModule)
+	server := userservice.NewServer(userUsecase)
 
 	// gRPC сервер
 	grpcServer := grpc.NewServer()

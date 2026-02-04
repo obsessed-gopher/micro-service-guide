@@ -14,7 +14,7 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	if err := s.userModule.Delete(ctx, req.Id); err != nil {
+	if err := s.userUsecase.Delete(ctx, req.Id); err != nil {
 		return nil, mapError(err)
 	}
 

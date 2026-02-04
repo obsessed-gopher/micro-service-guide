@@ -22,7 +22,7 @@
 ┌──────────────────────────────────────────────────────────┐
 │                   BUSINESS LAYER                         │
 │              (use cases, бизнес-правила)                 │
-│                  internal/modules/                       │
+│                  internal/usecases/                       │
 └──────────────────────────────────────────────────────────┘
                           │
             ┌─────────────┴─────────────┐
@@ -47,11 +47,11 @@
 ### 1. Dependency Inversion (Инверсия зависимостей)
 
 Бизнес-логика не зависит от инфраструктуры. Вместо этого:
-- `modules/` определяет **интерфейсы** (Ports)
+- `usecases/` определяет **интерфейсы** (Ports)
 - `adapters/` реализует эти интерфейсы (Adapters)
 
 ```go
-// internal/modules/user.go — определяет интерфейс
+// internal/usecases/user.go — определяет интерфейс
 type UserRepository interface {
     Create(ctx context.Context, user *models.User) error
     GetByID(ctx context.Context, id string) (*models.User, error)
@@ -67,7 +67,7 @@ func (r *PostgresUserRepository) Create(...) error { ... }
 Интерфейсы определяются там, где используются, а не там, где реализуются.
 
 ```
-✓ internal/modules/user.go      — type UserRepository interface
+✓ internal/usecases/user.go      — type UserRepository interface
 ✗ internal/adapters/repository/ — НЕ здесь
 ```
 
@@ -101,9 +101,9 @@ Transport → Business → Domain
 
 | Преимущество | Описание |
 |--------------|----------|
-| **Изоляция бизнес-логики** | Смена PostgreSQL на MongoDB не затрагивает `modules/` |
+| **Изоляция бизнес-логики** | Смена PostgreSQL на MongoDB не затрагивает `usecases/` |
 | **Тестируемость** | Unit-тесты бизнес-логики без БД через моки |
-| **Независимость от транспорта** | Один `modules/` работает с gRPC, HTTP, Kafka |
+| **Независимость от транспорта** | Один `usecases/` работает с gRPC, HTTP, Kafka |
 | **Чёткие границы** | Каждый слой имеет определённую ответственность |
 | **Параллельная разработка** | Команда A делает adapters, команда B — handlers |
 | **Простой рефакторинг** | Замена реализации не ломает бизнес-логику |
@@ -116,7 +116,7 @@ Transport → Business → Domain
 
 | Задача | Где искать |
 |--------|------------|
-| Бизнес-логика | `internal/modules/` |
+| Бизнес-логика | `internal/usecases/` |
 | Работа с БД | `internal/adapters/repository/` |
 | gRPC хендлеры | `internal/app/grpc/<service>/` |
 | Модели данных | `internal/models/` |
@@ -130,7 +130,7 @@ Transport → Business → Domain
 ```
 1. api/user_service/rpc_block_user.proto       — proto
 2. internal/app/grpc/user_service/block_user.go — handler
-3. internal/modules/user.go                     — бизнес-метод (если нужен)
+3. internal/usecases/user.go                     — бизнес-метод (если нужен)
 ```
 
 3 файла, каждый с понятной ответственностью.

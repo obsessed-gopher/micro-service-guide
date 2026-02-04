@@ -1,5 +1,5 @@
-// Package modules содержит бизнес-логику сервиса.
-package modules
+// Package usecases содержит бизнес-логику сервиса.
+package usecases
 
 import (
 	"context"
@@ -32,16 +32,16 @@ type IDGenerator interface {
 	Generate() string
 }
 
-// UserModule - модуль бизнес-логики пользователей.
-type UserModule struct {
+// UserUsecase - модуль бизнес-логики пользователей.
+type UserUsecase struct {
 	repo   UserRepository
 	hasher PasswordHasher
 	idGen  IDGenerator
 }
 
-// NewUserModule создаёт новый модуль пользователей.
-func NewUserModule(repo UserRepository, hasher PasswordHasher, idGen IDGenerator) *UserModule {
-	return &UserModule{
+// NewUserUsecase создаёт новый модуль пользователей.
+func NewUserUsecase(repo UserRepository, hasher PasswordHasher, idGen IDGenerator) *UserUsecase {
+	return &UserUsecase{
 		repo:   repo,
 		hasher: hasher,
 		idGen:  idGen,
@@ -51,7 +51,7 @@ func NewUserModule(repo UserRepository, hasher PasswordHasher, idGen IDGenerator
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
 // Create создаёт нового пользователя.
-func (m *UserModule) Create(ctx context.Context, input models.CreateUserInput) (*models.User, error) {
+func (m *UserUsecase) Create(ctx context.Context, input models.CreateUserInput) (*models.User, error) {
 	if !emailRegex.MatchString(input.Email) {
 		return nil, types.ErrInvalidEmail
 	}
@@ -92,7 +92,7 @@ func (m *UserModule) Create(ctx context.Context, input models.CreateUserInput) (
 }
 
 // GetByID возвращает пользователя по ID.
-func (m *UserModule) GetByID(ctx context.Context, id string) (*models.User, error) {
+func (m *UserUsecase) GetByID(ctx context.Context, id string) (*models.User, error) {
 	user, err := m.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("get user: %w", err)
@@ -101,7 +101,7 @@ func (m *UserModule) GetByID(ctx context.Context, id string) (*models.User, erro
 }
 
 // Update обновляет данные пользователя.
-func (m *UserModule) Update(ctx context.Context, id string, input models.UpdateUserInput) (*models.User, error) {
+func (m *UserUsecase) Update(ctx context.Context, id string, input models.UpdateUserInput) (*models.User, error) {
 	user, err := m.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("get user: %w", err)
@@ -136,7 +136,7 @@ func (m *UserModule) Update(ctx context.Context, id string, input models.UpdateU
 }
 
 // Delete удаляет пользователя.
-func (m *UserModule) Delete(ctx context.Context, id string) error {
+func (m *UserUsecase) Delete(ctx context.Context, id string) error {
 	if err := m.repo.Delete(ctx, id); err != nil {
 		return fmt.Errorf("delete user: %w", err)
 	}
@@ -144,7 +144,7 @@ func (m *UserModule) Delete(ctx context.Context, id string) error {
 }
 
 // List возвращает список пользователей.
-func (m *UserModule) List(ctx context.Context, filter models.ListUsersFilter) ([]*models.User, int, error) {
+func (m *UserUsecase) List(ctx context.Context, filter models.ListUsersFilter) ([]*models.User, int, error) {
 	if filter.Limit <= 0 {
 		filter.Limit = 20
 	}

@@ -8,8 +8,8 @@ import (
 	pb "github.com/obsessed-gopher/micro-service-guide/pkg/pb/user_service"
 )
 
-// UserModule - интерфейс бизнес-логики пользователей.
-type UserModule interface {
+// UserUsecase - интерфейс бизнес-логики пользователей.
+type UserUsecase interface {
 	Create(ctx context.Context, input models.CreateUserInput) (*models.User, error)
 	GetByID(ctx context.Context, id string) (*models.User, error)
 	Update(ctx context.Context, id string, input models.UpdateUserInput) (*models.User, error)
@@ -20,12 +20,12 @@ type UserModule interface {
 // Server - gRPC сервер сервиса пользователей.
 type Server struct {
 	pb.UnimplementedUserServiceServer
-	userModule UserModule
+	userUsecase UserUsecase
 }
 
 // NewServer создаёт новый сервер.
-func NewServer(userModule UserModule) *Server {
+func NewServer(userUsecase UserUsecase) *Server {
 	return &Server{
-		userModule: userModule,
+		userUsecase: userUsecase,
 	}
 }

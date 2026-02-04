@@ -71,11 +71,11 @@ service UserService {
 make proto
 ```
 
-### 4. Добавить метод в modules (если нужна новая логика)
+### 4. Добавить метод в usecases (если нужна новая логика)
 
 ```go
-// internal/modules/user.go
-func (m *UserModule) Block(ctx context.Context, id, reason string) error {
+// internal/usecases/user.go
+func (m *UserUsecase) Block(ctx context.Context, id, reason string) error {
     user, err := m.repo.GetByID(ctx, id)
     if err != nil {
         return err
@@ -111,7 +111,7 @@ func (s *Server) BlockUser(ctx context.Context, req *pb.BlockUserRequest) (*pb.B
         return nil, status.Error(codes.InvalidArgument, "id is required")
     }
 
-    if err := s.userModule.Block(ctx, req.Id, req.Reason); err != nil {
+    if err := s.userUsecase.Block(ctx, req.Id, req.Reason); err != nil {
         return nil, mapError(err)
     }
 
@@ -119,11 +119,11 @@ func (s *Server) BlockUser(ctx context.Context, req *pb.BlockUserRequest) (*pb.B
 }
 ```
 
-### 6. Обновить интерфейс в server.go (если добавили метод в modules)
+### 6. Обновить интерфейс в server.go (если добавили метод в usecases)
 
 ```go
 // internal/app/grpc/user_service/server.go
-type UserModule interface {
+type UserUsecase interface {
     // ... existing methods
     Block(ctx context.Context, id, reason string) error
 }
@@ -167,7 +167,7 @@ internal/app/grpc/order_service/
 
 ```
 internal/models/order.go
-internal/modules/order.go
+internal/usecases/order.go
 internal/adapters/repository/order_postgres.go
 ```
 

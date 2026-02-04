@@ -18,7 +18,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 		return nil, status.Error(codes.InvalidArgument, "password is required")
 	}
 
-	user, err := s.userModule.Create(ctx, models.CreateUserInput{
+	user, err := s.userUsecase.Create(ctx, models.CreateUserInput{
 		Email:    req.Email,
 		Name:     req.Name,
 		Password: req.Password,

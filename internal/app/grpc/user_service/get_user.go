@@ -14,7 +14,7 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	user, err := s.userModule.GetByID(ctx, req.Id)
+	user, err := s.userUsecase.GetByID(ctx, req.Id)
 	if err != nil {
 		return nil, mapError(err)
 	}

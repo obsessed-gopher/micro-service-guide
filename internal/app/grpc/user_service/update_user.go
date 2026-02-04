@@ -27,7 +27,7 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 		input.Status = &st
 	}
 
-	user, err := s.userModule.Update(ctx, req.Id, input)
+	user, err := s.userUsecase.Update(ctx, req.Id, input)
 	if err != nil {
 		return nil, mapError(err)
 	}

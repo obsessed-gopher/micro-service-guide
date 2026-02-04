@@ -33,7 +33,7 @@
 │   │
 │   ├── config/                     # Структуры конфигурации
 │   ├── models/                     # Бизнес-модели
-│   ├── modules/                    # Бизнес-логика
+│   ├── usecases/                    # Бизнес-логика
 │   ├── types/                      # Ошибки, enum'ы
 │   ├── metrics/
 │   ├── utils/
@@ -81,7 +81,7 @@ cmd/main.go
 internal/app/grpc/*     # Транспорт (валидация, маппинг)
      │
      ▼
-internal/modules/       # Бизнес-логика
+internal/usecases/       # Бизнес-логика
      │
      ▼
 internal/adapters/      # Инфраструктура (БД, API)
